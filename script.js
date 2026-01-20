@@ -40,8 +40,8 @@ const GameController = (function () {
     }
 
     const setNames = (name1, name2) => {
-        players[0].name === "" ? "Player One" : name1;
-        players[1].name === "" ? "Player Two" : name2;
+        players[0].name = name1 || "Player One";
+        players[1].name = name2 || "Player Two";
     }
 
     const winCon = [
@@ -50,17 +50,80 @@ const GameController = (function () {
         [0, 4, 8], [2, 4, 6]
     ]
 
-    const checkWin = () => {
+    const checkWin = (board) => {
+        for (const condition of winCon) {
+            const [num1, num2, num3] = condition;
+            if (board[num1] && board[num1] === board[num2] && board[num1] === board[num3]) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    const checkTie = (board) => {
+        for (let idx = 0; idx < 9; idx++) {
+            if (board[idx] === "") return false;
+        }
+        return true;
     }
 
     const getActivePlayer = () => {
         return turn;
     }
 
-    return { switchTurn, setNames, getActivePlayer }
+    let gameOver = false;
+
+    const playRound = () => {
+        console.log("Current board:", GameBoard.viewBoard());
+        while (!gameOver) {
+            let mark = turn.marker;
+            console.log("Turn:", turn.name);
+            const idx = Number(prompt("Enter index:"));
+
+            if (idx < 0 || idx > 8 || Number.isNaN(idx)) {
+                console.log("Enter a number between 0 and 8");
+                continue;
+            }
+
+            const success = GameBoard.placeMarker(mark, idx);
+
+            if (!success) {
+                console.log("ALready There");
+                continue;
+            }
+            else {
+                console.log("Marked");
+            }
+
+            const board = GameBoard.viewBoard();
+
+            console.log(board);
+
+            if (checkWin(GameBoard.viewBoard())) {
+                gameOver = true;
+                console.log(turn.name, "won");
+                return;
+            }
+            if (checkTie(GameBoard.viewBoard())) {
+                gameOver = true;
+                console.log("Game Tied.");
+                return;
+            }
+
+            switchTurn();
+        }
+    }
+
+    const newGame = () => {
+        GameBoard.resetBoard();
+        gameOver = false;
+        turn = players[0];
+        playRound();
+    }
+
+    return { switchTurn, setNames, getActivePlayer, checkWin, checkTie, playRound, newGame }
 })()
 
 
-
+GameController.newGame();
 
