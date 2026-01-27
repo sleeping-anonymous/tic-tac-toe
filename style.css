@@ -3,3 +3,24 @@
     padding: 0;
     margin: 0;
 }
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+
+    gap: 8px;
+
+    margin: 20px auto;
+    width: max-content;
+}
+
+/* for the marker in cell */
+.cell {
+    border: 2px solid black;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

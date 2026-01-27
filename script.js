@@ -78,7 +78,7 @@ const GameController = (function () {
         while (!gameOver) {
             let mark = turn.marker;
             console.log("Turn:", turn.name);
-            const idx = Number(prompt("Enter index:"));
+            // const idx = Number(prompt("Enter index:"));
 
             if (idx < 0 || idx > 8 || Number.isNaN(idx)) {
                 console.log("Enter a number between 0 and 8");
@@ -125,5 +125,22 @@ const GameController = (function () {
 })()
 
 
-GameController.newGame();
+// GameController.newGame();
+
+const boardDiv = document.querySelector(".game-board");
+
+function renderBoard() {
+    boardDiv.innerHTML = "";
+    const board = GameBoard.viewBoard();
+
+    board.forEach((value, index) => {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.index = index;
+        cell.textContent = value;
+        boardDiv.appendChild(cell);
+    });
+}
+
+renderBoard();
 
