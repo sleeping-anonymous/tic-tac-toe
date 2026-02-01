@@ -73,55 +73,23 @@ const GameController = (function () {
 
     let gameOver = false;
 
-    const playRound = () => {
-        console.log("Current board:", GameBoard.viewBoard());
-        while (!gameOver) {
-            let mark = turn.marker;
-            console.log("Turn:", turn.name);
-            // const idx = Number(prompt("Enter index:"));
 
-            if (idx < 0 || idx > 8 || Number.isNaN(idx)) {
-                console.log("Enter a number between 0 and 8");
-                continue;
-            }
-
-            const success = GameBoard.placeMarker(mark, idx);
-
-            if (!success) {
-                console.log("ALready There");
-                continue;
-            }
-            else {
-                console.log("Marked");
-            }
-
-            const board = GameBoard.viewBoard();
-
-            console.log(board);
-
-            if (checkWin(GameBoard.viewBoard())) {
-                gameOver = true;
-                console.log(turn.name, "won");
-                return;
-            }
-            if (checkTie(GameBoard.viewBoard())) {
-                gameOver = true;
-                console.log("Game Tied.");
-                return;
-            }
-
-            switchTurn();
-        }
-    }
 
     const newGame = () => {
         GameBoard.resetBoard();
         gameOver = false;
         turn = players[0];
-        playRound();
     }
 
-    return { switchTurn, setNames, getActivePlayer, checkWin, checkTie, playRound, newGame }
+    const isGameOver = () => {
+        return gameOver;
+    }
+
+    const endGame = () => {
+        gameOver = true;
+    }
+
+    return { switchTurn, setNames, getActivePlayer, checkWin, checkTie, newGame, isGameOver, endGame }
 })()
 
 
@@ -134,13 +102,63 @@ function renderBoard() {
     const board = GameBoard.viewBoard();
 
     board.forEach((value, index) => {
+
         const cell = document.createElement("div");
         cell.classList.add("cell");
         cell.dataset.index = index;
         cell.textContent = value;
         boardDiv.appendChild(cell);
+
+        cell.addEventListener("click", () => {
+            if (GameController.isGameOver()) return;
+
+            const player = GameController.getActivePlayer()
+            const success = GameBoard.placeMarker(player.marker, index);
+
+            if (!success) return;
+
+            if (GameController.checkWin(GameBoard.viewBoard())) {
+                document.querySelector(".message-box").textContent = `${player.name} Wins`;
+                GameController.endGame();
+            }
+            else if (GameController.checkTie(GameBoard.viewBoard())) {
+                document.querySelector(".message-box").textContent = `Game is Tied`;
+                GameController.endGame();
+            }
+            else {
+                GameController.switchTurn();
+                const nextPlayer = GameController.getActivePlayer();
+                document.querySelector(".message-box").textContent = `${nextPlayer.name}'s Turn`
+            }
+
+            renderBoard();   // marker is places , so rerender the board
+        })
     });
 }
 
-renderBoard();
+
+const startbtn = document.querySelector(".start-game");
+const clearBtn = document.querySelector(".clear-board");
+
+startbtn.addEventListener("click", () => {
+    boardDiv.style.display = "grid";  // it gets the board to be visible ons cren and pushes the btns down in UI
+
+    const p1 = document.querySelector(".player1").value;
+    const p2 = document.querySelector(".player2").value;
+    GameController.setNames(p1, p2);
+
+    const current = GameController.getActivePlayer();
+    document.querySelector(".message-box").textContent =
+        `${current.name}'s Turn`;
+
+    GameController.newGame();
+    renderBoard();
+})
+
+clearBtn.addEventListener("click", () => {
+    const currPlayer = GameController.getActivePlayer();
+    document.querySelector(".message-box").textContent = `${currPlayer}'s Turn`;
+    GameController.newGame();
+    renderBoard();
+})
 
