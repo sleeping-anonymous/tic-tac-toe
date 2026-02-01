@@ -147,18 +147,19 @@ startbtn.addEventListener("click", () => {
     const p2 = document.querySelector(".player2").value;
     GameController.setNames(p1, p2);
 
+    GameController.newGame();
+
     const current = GameController.getActivePlayer();
     document.querySelector(".message-box").textContent =
         `${current.name}'s Turn`;
 
-    GameController.newGame();
     renderBoard();
 })
 
 clearBtn.addEventListener("click", () => {
     GameController.newGame();
     const currPlayer = GameController.getActivePlayer();
-    document.querySelector(".message-box").textContent = `${currPlayer}'s Turn`;
+    document.querySelector(".message-box").textContent = `${currPlayer.name}'s Turn`;
     renderBoard();
 })
 
