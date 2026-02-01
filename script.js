@@ -156,9 +156,9 @@ startbtn.addEventListener("click", () => {
 })
 
 clearBtn.addEventListener("click", () => {
+    GameController.newGame();
     const currPlayer = GameController.getActivePlayer();
     document.querySelector(".message-box").textContent = `${currPlayer}'s Turn`;
-    GameController.newGame();
     renderBoard();
 })
 
